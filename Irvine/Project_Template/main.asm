@@ -12,6 +12,11 @@ sevenOperation   BYTE "7)   Calculate sin(x) and cos(x).",0
 directions		 BYTE "Enter 2 numbers.", 0
 prompt1			 BYTE "First number: ", 0
 prompt2			 BYTE "Second number: ", 0
+num real4 ?
+onehundred      dword 100
+msg1  byte "Log(",0
+msg2  byte ")",0
+equals1 byte "=",0
 choice_sentence    BYTE "Enter your choice :- ",0
 divide			 BYTE " / ", 0
 equals			 BYTE " = ", 0
@@ -49,11 +54,7 @@ EC3response			DWORD	?							; BOOL for user to loop or exit.
 
 .code
 main PROC
-;//////////////////////////ZEAD/////////////////////////////;
 
-call divide
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Output the title
 		mov		edx, OFFSET codeTitle
 		call	WriteString
@@ -97,11 +98,25 @@ call divide
 	mov choice_number,eax
 
 	cmp choice_number,3
-	je l1
+	je l3
+	cmp choice_number,7
+	je l7
+	cmp choice_number,4
+	je l4
 	jmp next
 
-	l1:
+	l3:
+	call clrscr
 	call Perc
+
+	l4:
+	call clrscr
+	call log
+	
+	l7:
+	call clrscr
+	call dvde
+
 	next:
 	call crlf
 	
@@ -125,8 +140,8 @@ finit
 	    
 	; Perform the calculation 
 		fild		 num1
-		fild		 num2
-		Fdiv          		
+		Fidiv         num2
+		fimul   	 onehundred
 
 	    ; Print the total to the console
 		; Print num1
@@ -151,7 +166,37 @@ finit
 	    call crlf
 		
 		perc endp
-		divide PROC
+		
+log proc
+finit
+call readint
+mov num,eax
+ ; log(base 10)
+  fldl2t               ; st: log2(10)
+  fld num              ; st: log2(10) num
+  fyl2x                ; st: log10(num)
+ 
+ ;print in the Console Application
+ mov edx,offset msg1
+ call writestring
+ 
+ mov edx,num
+ call writedec
+ 
+ mov edx,offset msg2
+ call writestring
+ 
+ mov edx,offset equals1
+ call writestring
+
+ call writefloat
+
+call crlf
+
+log endp
+		
+
+dvde PROC
 
 	
 	
@@ -252,8 +297,9 @@ JumpToLoop:			mov		edx, OFFSET EC3prompt
 					call	WriteString
 					call	CrLf
 
-	ret	; exit to operating system
-divide ENDP
+	ret	
+	; exit to operating system
+dvde ENDP
 
 
 END main
